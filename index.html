@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Trend Intelligence v5.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#1a1512;--ink2:#5a4f47;--ink3:#9a8f87;
+  --paper:#faf8f5;--paper2:#f2ede8;--paper3:#e8e0d8;
+  --accent:#c8531a;--accent2:#e8a87c;--accent3:#fde8d8;
+  --teal:#0f6e56;--teal2:#e1f5ee;--teal3:#9fe1cb;
+  --gold:#ba7517;--gold2:#faeeda;--gold3:#fac775;
+  --blue:#185fa5;--blue2:#e6f1fb;
+  --red:#a32d2d;--red2:#fcebeb;
+  --r:8px;--rL:14px;--rXL:20px;
+  --ff-head:'DM Serif Display',serif;--ff-ui:'Syne',sans-serif;--ff-mono:'DM Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--ff-ui);background:var(--paper);color:var(--ink);min-height:100vh;overflow-x:hidden}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:220px;background:var(--ink);display:flex;flex-direction:column;z-index:200}
+.sidebar-brand{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sidebar-logo{width:36px;height:36px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;margin-bottom:9px}
+.sidebar-logo i{color:#fff;font-size:17px}
+.sidebar-title{font-family:var(--ff-head);font-size:15px;color:#fff;line-height:1.2}
+.sidebar-sub{font-size:10px;color:rgba(255,255,255,.35);margin-top:2px;font-family:var(--ff-mono)}
+.sidebar-nav{flex:1;padding:14px 10px;overflow-y:auto}
+.nav-section{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.28);padding:12px 8px 5px;margin-top:2px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:7px;cursor:pointer;color:rgba(255,255,255,.55);font-size:12px;font-weight:500;transition:.14s;margin-bottom:1px;border:none;background:transparent;width:100%;text-align:left}
+.nav-item i{width:16px;text-align:center;font-size:14px;flex-shrink:0}
+.nav-item:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.9)}
+.nav-item.active{background:var(--accent);color:#fff}
+.nav-item .badge{margin-left:auto;background:rgba(255,255,255,.15);color:#fff;font-size:10px;padding:1px 7px;border-radius:99px;font-family:var(--ff-mono)}
+.nav-item.active .badge{background:rgba(255,255,255,.25)}
+.sidebar-footer{padding:14px;border-top:1px solid rgba(255,255,255,.08)}
+.sidebar-version{font-size:9px;color:rgba(255,255,255,.25);font-family:var(--ff-mono);text-align:center;line-height:1.6}
+.main{margin-left:220px;min-height:100vh}
+.topbar{background:var(--paper);border-bottom:1px solid var(--paper3);padding:13px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.topbar-title{font-family:var(--ff-head);font-size:18px}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.topbar-btn{padding:7px 14px;border-radius:var(--r);border:1px solid var(--paper3);background:transparent;cursor:pointer;font-family:var(--ff-ui);font-size:12px;font-weight:600;color:var(--ink2);transition:.14s;display:flex;align-items:center;gap:6px}
+.topbar-btn:hover{background:var(--paper2)}
+.topbar-btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.topbar-btn.primary:hover{background:var(--accent);border-color:var(--accent)}
+.content{padding:26px 28px;max-width:1060px}
+.panel{display:none;animation:fadeUp .22s ease}
+.panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.sec{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:11px;display:flex;align-items:center;gap:8px}
+.sec::after{content:'';flex:1;height:1px;background:var(--paper3)}
+.card{background:var(--paper);border:1px solid var(--paper3);border-radius:var(--rL);padding:18px 22px}
+.card-sm{background:var(--paper2);border:1px solid var(--paper3);border-radius:var(--r);padding:12px 15px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3)}
+.field input,.field select,.field textarea{font-family:var(--ff-ui);font-size:14px;padding:9px 13px;border:1px solid var(--paper3);border-radius:var(--r);background:var(--paper);color:var(--ink);outline:none;transition:.14s;width:100%}
+.field input:focus,.field select:focus{border-color:var(--ink);box-shadow:0 0 0 3px rgba(26,21,18,.05)}
+.btn{font-family:var(--ff-ui);font-size:12px;font-weight:600;padding:9px 20px;border-radius:var(--r);cursor:pointer;transition:.14s;display:inline-flex;align-items:center;gap:7px;border:none;white-space:nowrap}
+.btn-dark{background:var(--ink);color:#fff}
+.btn-dark:hover{background:var(--accent)}
+.btn-outline{background:transparent;color:var(--ink2);border:1px solid var(--paper3)}
+.btn-outline:hover{background:var(--paper2)}
+.btn-teal{background:var(--teal);color:#fff}
+.btn-teal:hover{background:#0a5241}
+.btn-danger{background:var(--red2);color:var(--red);border:1px solid #f09595}
+.btn-danger:hover{background:#f7c1c1}
+.btn:active{transform:scale(.97)}
+.btn-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.divider{height:1px;background:var(--paper3);margin:18px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.hero{border-radius:var(--rXL);background:var(--ink);color:#fff;padding:36px 40px;margin-bottom:24px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;right:-70px;top:-70px;width:290px;height:290px;border-radius:50%;background:var(--accent);opacity:.1}
+.hero::after{content:'';position:absolute;right:70px;bottom:-90px;width:180px;height:180px;border-radius:50%;background:var(--gold);opacity:.07}
+.hero-eyebrow{font-family:var(--ff-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);margin-bottom:9px}
+.hero-h{font-family:var(--ff-head);font-size:30px;line-height:1.15;margin-bottom:11px}
+.hero-h em{color:var(--accent2);font-style:italic}
+.hero-p{font-size:12px;color:rgba(255,255,255,.52);line-height:1.75;max-width:500px}
+.hero-stats{display:flex;gap:24px;margin-top:22px}
+.hstat{border-left:2px solid var(--accent);padding-left:12px}
+.hstat-n{font-family:var(--ff-mono);font-size:20px;color:var(--accent2)}
+.hstat-l{font-size:10px;color:rgba(255,255,255,.38);margin-top:2px}
+.metric-card{background:var(--paper2);border-radius:var(--r);padding:14px 16px;border:1px solid var(--paper3)}
+.metric-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);margin-bottom:5px}
+.metric-val{font-family:var(--ff-mono);font-size:26px;font-weight:500;color:var(--ink);line-height:1}
+.metric-sub{font-size:10px;color:var(--ink3);margin-top:4px}
+.tag{font-size:11px;padding:3px 10px;border-radius:99px;cursor:pointer;font-weight:500;border:1px solid transparent;transition:.12s;display:inline-block}
+.tag:hover{transform:scale(1.04)}
+.tag-garment{background:var(--paper3);color:var(--ink2)}
+.tag-color{background:var(--accent3);color:var(--accent)}
+.tag-print{background:var(--teal2);color:var(--teal)}
+.tag-fabric{background:var(--gold2);color:var(--gold)}
+.tag-wrap{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px}
+.toggle-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+.toggle{display:flex;align-items:center;gap:7px;padding:7px 13px;border-radius:var(--r);border:1px solid var(--paper3);cursor:pointer;font-size:12px;font-weight:500;color:var(--ink2);transition:.14s;user-select:none}
+.toggle:hover{background:var(--paper2)}
+.toggle.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.toggle-dot{width:11px;height:11px;border-radius:50%;background:var(--paper3);flex-shrink:0;transition:.14s}
+.toggle.on .toggle-dot{background:var(--accent2)}
+.mandate{padding:5px 14px;border-radius:99px;font-family:var(--ff-mono);font-size:12px;font-weight:500;letter-spacing:.04em;display:inline-block}
+.m-buy{background:var(--teal2);color:var(--teal);border:1px solid var(--teal3)}
+.m-hold{background:var(--gold2);color:#854f0b;border:1px solid var(--gold3)}
+.m-watch{background:var(--gold2);color:var(--gold);border:1px solid #ef9f27}
+.m-exit{background:var(--red2);color:var(--red);border:1px solid #f09595}
+.score-ring-wrap{display:flex;align-items:center;gap:22px;margin-bottom:18px}
+.score-ring{position:relative;width:84px;height:84px;flex-shrink:0}
+.score-ring svg{transform:rotate(-90deg)}
+.score-ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--ff-mono);font-size:20px;font-weight:500}
+.sub-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.sub-card{background:var(--paper2);border-radius:var(--r);padding:13px;border:1px solid var(--paper3)}
+.sub-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);margin-bottom:5px}
+.sub-val{font-family:var(--ff-mono);font-size:22px;font-weight:500}
+.bar-track{height:4px;background:var(--paper3);border-radius:99px;margin-top:7px;overflow:hidden}
+.bar-fill{height:100%;border-radius:99px;transition:width .7s cubic-bezier(.34,1.56,.64,1)}
+.vel-row{display:flex;align-items:center;gap:11px;padding:11px 15px;border-radius:var(--r);background:var(--paper2);border:1px solid var(--paper3);margin-bottom:14px}
+.vel-track{flex:1;height:7px;background:var(--paper3);border-radius:99px;position:relative;overflow:hidden}
+.vel-fill{position:absolute;top:0;height:100%;border-radius:99px;transition:all .5s ease}
+.rationale-box{padding:13px 17px;border-radius:var(--r);border-left:3px solid var(--accent);background:var(--accent3);font-size:12px;line-height:1.65;color:var(--ink2);margin-bottom:14px}
+.rationale-box strong{color:var(--accent)}
+.chip{font-size:11px;padding:3px 10px;border-radius:99px;font-family:var(--ff-mono);background:var(--paper2);color:var(--ink2);border:1px solid var(--paper3)}
+.loading{display:none;flex-direction:column;align-items:center;padding:48px 20px;gap:13px}
+.loading.show{display:flex}
+.spinner{width:28px;height:28px;border:2px solid var(--paper3);border-top-color:var(--ink);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-step{font-size:11px;color:var(--ink3);font-family:var(--ff-mono);opacity:.35;transition:.2s}
+.load-step.on{opacity:1;color:var(--ink)}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}
+.info-chip{padding:11px 13px;border-radius:var(--r);background:var(--paper2);border:1px solid var(--paper3)}
+.info-chip-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);display:block;margin-bottom:2px}
+.info-chip-val{font-size:11px;color:var(--ink);line-height:1.4}
+.chart-box{background:var(--paper);border:1px solid var(--paper3);border-radius:var(--rL);padding:18px}
+.chart-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);margin-bottom:12px}
+.wl-item{display:flex;align-items:center;gap:11px;padding:11px 15px;border-radius:var(--r);background:var(--paper);border:1px solid var(--paper3);margin-bottom:7px;transition:.14s}
+.wl-item:hover{background:var(--paper2)}
+.wl-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.wl-name{flex:1;font-size:13px;font-weight:500}
+.wl-meta{font-size:10px;color:var(--ink3);font-family:var(--ff-mono)}
+.alert-item{padding:13px 16px;border-radius:var(--r);margin-bottom:7px;border:1px solid transparent;display:flex;align-items:flex-start;gap:13px}
+.alert-surge{background:var(--teal2);border-color:var(--teal3)}
+.alert-drop{background:var(--red2);border-color:#f09595}
+.alert-icon{font-size:17px;flex-shrink:0;margin-top:1px}
+.alert-surge .alert-icon{color:var(--teal)}
+.alert-drop .alert-icon{color:var(--red)}
+.rq-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.rq-card{background:var(--paper2);border-radius:var(--r);padding:13px;border:1px solid var(--paper3)}
+.rq-item{display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--paper3);font-size:11px;gap:8px}
+.rq-item:last-child{border:none}
+.rq-item span:first-child{color:var(--ink2);flex:1}
+.rq-breakout{font-size:9px;background:var(--accent3);color:var(--accent);border-radius:99px;padding:2px 7px;font-family:var(--ff-mono);white-space:nowrap}
+.rq-val{font-family:var(--ff-mono);font-size:10px;color:var(--ink3);white-space:nowrap}
+.error-box{padding:14px 18px;border-radius:var(--r);background:var(--red2);border:1px solid #f09595;color:var(--red);font-size:13px;display:none}
+.error-box.show{display:block}
+.meth-step{display:flex;gap:18px;margin-bottom:26px}
+.meth-num{width:38px;height:38px;border-radius:50%;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--ff-mono);font-size:13px;font-weight:500;flex-shrink:0;margin-top:2px}
+.meth-title{font-size:14px;font-weight:600;margin-bottom:5px}
+.meth-desc{font-size:12px;color:var(--ink2);line-height:1.7}
+.formula-box{background:var(--ink);color:var(--accent2);font-family:var(--ff-mono);font-size:12px;padding:13px 16px;border-radius:var(--r);margin-top:9px;line-height:1.8;white-space:pre-wrap}
+.deploy-step{display:flex;gap:15px;padding:16px 0;border-bottom:1px solid var(--paper3)}
+.deploy-step:last-child{border:none}
+.deploy-num{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--ff-mono);font-size:12px;flex-shrink:0}
+.deploy-title{font-size:13px;font-weight:600;margin-bottom:5px}
+.deploy-desc{font-size:12px;color:var(--ink2);line-height:1.7;margin-bottom:7px}
+.code-block{background:var(--ink);color:#e8e0d8;font-family:var(--ff-mono);font-size:11px;padding:13px 16px;border-radius:var(--r);line-height:1.8;position:relative;white-space:pre-wrap;word-break:break-all}
+.code-copy{position:absolute;top:7px;right:7px;background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.55);font-size:10px;padding:3px 9px;border-radius:4px;cursor:pointer;font-family:var(--ff-mono);transition:.14s}
+.code-copy:hover{background:rgba(255,255,255,.2);color:#fff}
+.timeline{position:relative;padding-left:22px}
+.timeline::before{content:'';position:absolute;left:0;top:7px;bottom:7px;width:2px;background:var(--paper3)}
+.tl-item{position:relative;margin-bottom:18px;padding-left:18px}
+.tl-item::before{content:'';position:absolute;left:-26px;top:5px;width:9px;height:9px;border-radius:50%;background:var(--accent);border:2px solid var(--paper)}
+.tl-date{font-family:var(--ff-mono);font-size:9px;color:var(--ink3);margin-bottom:2px}
+.tl-title{font-size:12px;font-weight:600;margin-bottom:2px}
+.tl-desc{font-size:11px;color:var(--ink2);line-height:1.6}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--paper3)}
+.settings-row:last-child{border:none}
+.settings-info{flex:1}
+.settings-label{font-size:13px;font-weight:600;margin-bottom:2px}
+.settings-desc{font-size:11px;color:var(--ink3);line-height:1.5}
+.switch{width:42px;height:23px;border-radius:99px;background:var(--paper3);position:relative;cursor:pointer;transition:.2s;flex-shrink:0;border:none}
+.switch.on{background:var(--teal)}
+.switch-thumb{position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.switch.on .switch-thumb{left:21px}
+.about-hero{background:var(--ink);color:#fff;border-radius:var(--rXL);padding:36px;margin-bottom:22px;position:relative;overflow:hidden}
+.about-hero::before{content:'';position:absolute;right:-55px;bottom:-55px;width:240px;height:240px;border-radius:50%;background:var(--accent);opacity:.1}
+.about-tag{display:inline-block;font-family:var(--ff-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 11px;border-radius:99px;background:rgba(200,83,26,.2);color:var(--accent2);margin-bottom:12px}
+.about-h{font-family:var(--ff-head);font-size:25px;line-height:1.2;margin-bottom:11px}
+.about-p{font-size:12px;color:rgba(255,255,255,.55);line-height:1.75;max-width:540px}
+.gap-card{background:var(--red2);border:1px solid #f09595;border-radius:var(--r);padding:12px 16px;margin-bottom:9px}
+.gap-title{font-size:12px;font-weight:600;color:var(--red);margin-bottom:3px}
+.sol-card{background:var(--teal2);border:1px solid var(--teal3);border-radius:var(--r);padding:12px 16px;margin-bottom:9px}
+.sol-title{font-size:12px;font-weight:600;color:var(--teal);margin-bottom:3px}
+.dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px}
+.activity-item{display:flex;align-items:flex-start;gap:9px;padding:9px 0;border-bottom:1px solid var(--paper3)}
+.activity-item:last-child{border:none}
+.activity-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.activity-text{font-size:11px;color:var(--ink2);line-height:1.5;flex:1}
+.activity-time{font-size:10px;color:var(--ink3);font-family:var(--ff-mono);white-space:nowrap}
+.compare-card{background:var(--paper2);border-radius:var(--rL);padding:16px;border:1px solid var(--paper3);position:relative}
+.cbar-row{display:flex;align-items:center;gap:7px;font-size:10px;color:var(--ink3);margin-bottom:4px}
+.cbar-track{flex:1;height:3px;background:var(--paper3);border-radius:99px;overflow:hidden}
+.cbar-fill{height:100%;border-radius:99px}
+@media(max-width:768px){.sidebar{transform:translateX(-100%)}.main{margin-left:0}.grid2,.grid3,.grid4,.sub-grid,.info-grid,.rq-grid,.dash-grid{grid-template-columns:1fr}.content{padding:14px}.hero{padding:22px}.hero-h{font-size:22px}}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-logo"><i class="fa-solid fa-chart-line"></i></div>
+    <div class="sidebar-title">Trend Intel</div>
+    <div class="sidebar-sub">Ethnic &amp; Value Retail · IN</div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-section">Analysis</div>
+    <button class="nav-item active" onclick="go('dashboard')"><i class="fa-solid fa-gauge-high"></i> Dashboard</button>
+    <button class="nav-item" onclick="go('scanner')"><i class="fa-solid fa-magnifying-glass-chart"></i> Scanner</button>
+    <button class="nav-item" onclick="go('compare')"><i class="fa-solid fa-arrows-left-right"></i> Compare</button>
+    <button class="nav-item" onclick="go('watchlist')"><i class="fa-solid fa-bookmark"></i> Watchlist <span class="badge" id="wl-badge">0</span></button>
+    <button class="nav-item" onclick="go('alerts')"><i class="fa-solid fa-bell"></i> Alerts <span class="badge" id="alert-badge">0</span></button>
+    <div class="nav-section">Insights</div>
+    <button class="nav-item" onclick="go('regional')"><i class="fa-solid fa-map-location-dot"></i> Regional Pulse</button>
+    <button class="nav-item" onclick="go('seasonal')"><i class="fa-solid fa-calendar-days"></i> Seasonal Calendar</button>
+    <div class="nav-section">Reference</div>
+    <button class="nav-item" onclick="go('methodology')"><i class="fa-solid fa-flask"></i> Methodology</button>
+    <button class="nav-item" onclick="go('deploy')"><i class="fa-solid fa-rocket"></i> Deploy Guide</button>
+    <button class="nav-item" onclick="go('settings')"><i class="fa-solid fa-sliders"></i> Settings</button>
+    <button class="nav-item" onclick="go('about')"><i class="fa-solid fa-circle-info"></i> About Project</button>
+  </div>
+  <div class="sidebar-footer">
+    <div class="sidebar-version">v5.0 · Google Trends API<br>Graduation Project 2025<br><span id="api-status" style="color:rgba(255,255,255,.4)">checking backend...</span></div>
+  </div>
+</nav>
+
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Dashboard</div>
+    <div class="topbar-right">
+      <button class="topbar-btn" onclick="go('scanner')"><i class="fa-solid fa-plus"></i> New Scan</button>
+      <button class="topbar-btn primary" onclick="go('deploy')"><i class="fa-solid fa-rocket"></i> Deploy</button>
+    </div>
+  </div>
+  <div class="content">
+
+  <!-- DASHBOARD -->
+  <div class="panel active" id="panel-dashboard">
+    <div class="hero">
+      <div class="hero-eyebrow">Data-Centric · Resource-Efficient AI Framework</div>
+      <div class="hero-h">Know which trends to <em>buy</em>,<br>hold, or exit — before margins close.</div>
+      <div class="hero-p">Open-source Google Trends data. Scored by volume, momentum &amp; recency velocity. Zero licensing cost. Built for India's ethnic value retail market.</div>
+      <div class="hero-stats">
+        <div class="hstat"><div class="hstat-n">8</div><div class="hstat-l">Regions tracked</div></div>
+        <div class="hstat"><div class="hstat-n">3</div><div class="hstat-l">Time horizons</div></div>
+        <div class="hstat"><div class="hstat-n">₹0</div><div class="hstat-l">License cost</div></div>
+      </div>
+    </div>
+    <div class="dash-grid">
+      <div class="metric-card"><div class="metric-label">Scans run</div><div class="metric-val" id="dm-scans">0</div><div class="metric-sub">this session</div></div>
+      <div class="metric-card"><div class="metric-label">Watchlist</div><div class="metric-val" id="dm-wl">0</div><div class="metric-sub">concepts tracked</div></div>
+      <div class="metric-card"><div class="metric-label">Alerts fired</div><div class="metric-val" id="dm-alerts">0</div><div class="metric-sub">velocity crossings</div></div>
+      <div class="metric-card"><div class="metric-label">Last scan</div><div class="metric-val" style="font-size:15px;margin-top:4px" id="dm-last">—</div><div class="metric-sub">most recent</div></div>
+    </div>
+    <div class="grid2" style="gap:18px">
+      <div class="card">
+        <div class="sec">Recent activity</div>
+        <div id="dash-activity"><div style="font-size:12px;color:var(--ink3);padding:10px 0">Run your first scan to see activity.</div></div>
+      </div>
+      <div class="card">
+        <div class="sec">Quick start</div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <button class="btn btn-dark" style="justify-content:flex-start" onclick="go('scanner')"><i class="fa-solid fa-magnifying-glass-chart"></i> Scan a concept</button>
+          <button class="btn btn-outline" style="justify-content:flex-start" onclick="go('compare')"><i class="fa-solid fa-arrows-left-right"></i> Compare 2–4 concepts</button>
+          <button class="btn btn-outline" style="justify-content:flex-start" onclick="go('regional')"><i class="fa-solid fa-map-location-dot"></i> Regional pulse scan</button>
+          <button class="btn btn-outline" style="justify-content:flex-start" onclick="go('seasonal')"><i class="fa-solid fa-calendar-days"></i> Seasonal OTB calendar</button>
+          <button class="btn btn-teal" style="justify-content:flex-start" onclick="go('deploy')"><i class="fa-solid fa-rocket"></i> Deploy guide</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCANNER -->
+  <div class="panel" id="panel-scanner">
+    <div class="card" style="margin-bottom:18px">
+      <div class="sec">Concept</div>
+      <div class="field" style="margin-bottom:11px">
+        <input type="text" id="concept-input" placeholder="e.g. rust linen kurti, tiered anarkali, block print saree" style="font-size:14px"/>
+      </div>
+      <div class="sec">Garments</div>
+      <div class="tag-wrap">
+        <span class="tag tag-garment" onclick="at('kurti')">kurti</span><span class="tag tag-garment" onclick="at('saree')">saree</span>
+        <span class="tag tag-garment" onclick="at('anarkali')">anarkali</span><span class="tag tag-garment" onclick="at('lehenga')">lehenga</span>
+        <span class="tag tag-garment" onclick="at('sharara')">sharara</span><span class="tag tag-garment" onclick="at('palazzo')">palazzo</span>
+        <span class="tag tag-garment" onclick="at('co-ord set')">co-ord set</span><span class="tag tag-garment" onclick="at('dupatta')">dupatta</span>
+      </div>
+      <div class="sec">Colors</div>
+      <div class="tag-wrap">
+        <span class="tag tag-color" onclick="at('rust')">rust</span><span class="tag tag-color" onclick="at('indigo')">indigo</span>
+        <span class="tag tag-color" onclick="at('mustard')">mustard</span><span class="tag tag-color" onclick="at('terracotta')">terracotta</span>
+        <span class="tag tag-color" onclick="at('olive')">olive</span><span class="tag tag-color" onclick="at('mauve')">mauve</span>
+        <span class="tag tag-color" onclick="at('sage')">sage</span><span class="tag tag-color" onclick="at('burgundy')">burgundy</span>
+      </div>
+      <div class="sec">Prints &amp; techniques</div>
+      <div class="tag-wrap">
+        <span class="tag tag-print" onclick="at('block print')">block print</span><span class="tag tag-print" onclick="at('floral')">floral</span>
+        <span class="tag tag-print" onclick="at('ikat')">ikat</span><span class="tag tag-print" onclick="at('bandhani')">bandhani</span>
+        <span class="tag tag-print" onclick="at('ajrakh')">ajrakh</span><span class="tag tag-print" onclick="at('kalamkari')">kalamkari</span>
+        <span class="tag tag-print" onclick="at('mirror work')">mirror work</span><span class="tag tag-print" onclick="at('shibori')">shibori</span>
+      </div>
+      <div class="sec">Fabrics</div>
+      <div class="tag-wrap">
+        <span class="tag tag-fabric" onclick="at('linen')">linen</span><span class="tag tag-fabric" onclick="at('chanderi')">chanderi</span>
+        <span class="tag tag-fabric" onclick="at('georgette')">georgette</span><span class="tag tag-fabric" onclick="at('cotton')">cotton</span>
+        <span class="tag tag-fabric" onclick="at('khadi')">khadi</span><span class="tag tag-fabric" onclick="at('mul')">mul</span>
+        <span class="tag tag-fabric" onclick="at('tussar')">tussar</span>
+      </div>
+    </div>
+    <div class="grid2" style="margin-bottom:14px">
+      <div class="field"><label>Timeframe</label>
+        <select id="tf-select"><option value="today 3-m">Last 3 months</option><option value="today 12-m" selected>Last 12 months</option><option value="today 5-y">Last 5 years</option></select>
+      </div>
+      <div class="field"><label>Geography</label>
+        <select id="geo-select">
+          <option value="IN">India (all)</option><option value="IN-MH">Maharashtra</option>
+          <option value="IN-DL">Delhi NCR</option><option value="IN-KA">Karnataka</option>
+          <option value="IN-WB">West Bengal</option><option value="IN-TN">Tamil Nadu</option>
+          <option value="IN-GJ">Gujarat</option><option value="IN-RJ">Rajasthan</option>
+        </select>
+      </div>
+    </div>
+    <div class="sec">Options</div>
+    <div class="toggle-row">
+      <div class="toggle" id="tog-related" onclick="toggleOpt(this,'related')"><div class="toggle-dot"></div>Fetch related queries</div>
+      <div class="toggle" id="tog-wl" onclick="toggleOpt(this,'wl')"><div class="toggle-dot"></div>Save to watchlist</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-dark" onclick="runScan()"><i class="fa-solid fa-magnifying-glass-chart"></i> Run trend scan</button>
+      <button class="btn btn-outline" onclick="document.getElementById('concept-input').value='';document.getElementById('scan-result').style.display='none'"><i class="fa-solid fa-xmark"></i> Clear</button>
+    </div>
+    <div class="error-box" id="scan-error" style="margin-top:14px"></div>
+    <div class="loading" id="scan-loading" style="margin-top:22px">
+      <div class="spinner"></div>
+      <div>
+        <div class="load-step on" id="ls1">Parsing concept &amp; extracting keywords...</div>
+        <div class="load-step" id="ls2">Fetching anchor term from Google Trends...</div>
+        <div class="load-step" id="ls3">Querying trend data for all keywords...</div>
+        <div class="load-step" id="ls4">Computing score, velocity &amp; mandate...</div>
+      </div>
+    </div>
+    <div id="scan-result" style="display:none;margin-top:26px">
+      <div class="divider"></div>
+      <div class="sec">Intelligence report</div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:16px;flex-wrap:wrap">
+        <div><div style="font-family:var(--ff-head);font-size:20px;margin-bottom:4px" id="r-title"></div>
+        <div style="font-size:11px;color:var(--ink3);font-family:var(--ff-mono)" id="r-subtitle"></div></div>
+        <div id="r-mandate" class="mandate"></div>
+      </div>
+      <div class="score-ring-wrap">
+        <div class="score-ring">
+          <svg width="84" height="84" viewBox="0 0 84 84">
+            <circle cx="42" cy="42" r="33" fill="none" stroke="#e8e0d8" stroke-width="7"/>
+            <circle cx="42" cy="42" r="33" fill="none" stroke="#c8531a" stroke-width="7"
+              stroke-dasharray="207.3" stroke-dashoffset="207.3" stroke-linecap="round"
+              id="score-circle" style="transition:stroke-dashoffset .8s cubic-bezier(.34,1.56,.64,1)"/>
+          </svg>
+          <div class="score-ring-num" id="r-score">0</div>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:12px;color:var(--ink2);margin-bottom:9px" id="r-horizon-short"></div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px" id="r-chips"></div>
+        </div>
+      </div>
+      <div class="sub-grid">
+        <div class="sub-card"><div class="sub-label">Volume</div><div class="sub-val" id="r-vol">—</div><div class="bar-track"><div class="bar-fill" id="bv" style="background:#c8531a;width:0%"></div></div></div>
+        <div class="sub-card"><div class="sub-label">Momentum</div><div class="sub-val" id="r-mom">—</div><div class="bar-track"><div class="bar-fill" id="bm" style="background:#0f6e56;width:0%"></div></div></div>
+        <div class="sub-card"><div class="sub-label">Recency</div><div class="sub-val" id="r-rec">—</div><div class="bar-track"><div class="bar-fill" id="br" style="background:#ba7517;width:0%"></div></div></div>
+      </div>
+      <div class="vel-row">
+        <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);min-width:72px">Velocity</span>
+        <div class="vel-track"><div class="vel-fill" id="vel-fill"></div></div>
+        <span style="font-family:var(--ff-mono);font-size:13px;font-weight:500;min-width:56px;text-align:right" id="vel-val"></span>
+      </div>
+      <div class="rationale-box" id="r-rationale"></div>
+      <div class="info-grid">
+        <div class="info-chip"><span class="info-chip-label">Trend horizon</span><span class="info-chip-val" id="r-horizon"></span></div>
+        <div class="info-chip"><span class="info-chip-label">Seasonality</span><span class="info-chip-val" id="r-season"></span></div>
+        <div class="info-chip"><span class="info-chip-label">Parsed garment</span><span class="info-chip-val" id="r-garment"></span></div>
+        <div class="info-chip"><span class="info-chip-label">Pearson correlation</span><span class="info-chip-val" id="r-corr"></span></div>
+      </div>
+      <div class="chart-box" style="margin-bottom:14px">
+        <div class="chart-title">Search interest index over time (0–100 relative scale, not raw search counts)</div>
+        <div style="position:relative;height:190px"><canvas id="trend-chart" role="img" aria-label="Search interest over time"></canvas></div>
+      </div>
+      <div id="related-section" style="display:none">
+        <div class="sec">Related queries</div>
+        <div class="rq-grid" id="rq-grid"></div>
+      </div>
+      <div class="btn-row" style="margin-top:14px">
+        <button class="btn btn-outline" onclick="saveCurrentToWL()"><i class="fa-solid fa-bookmark"></i> Save to watchlist</button>
+        <button class="btn btn-outline" onclick="copyReport()"><i class="fa-solid fa-copy"></i> Copy report</button>
+        <button class="btn btn-outline" onclick="go('compare')"><i class="fa-solid fa-arrows-left-right"></i> Compare mode</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPARE -->
+  <div class="panel" id="panel-compare">
+    <div class="card" style="margin-bottom:18px">
+      <div class="sec">Concepts to compare (2–4)</div>
+      <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:14px">
+        <input type="text" style="font-family:var(--ff-ui);font-size:13px;padding:8px 13px;border:1px solid var(--paper3);border-radius:var(--r);outline:none" placeholder="Concept 1 — e.g. rust kurti" id="c1"/>
+        <input type="text" style="font-family:var(--ff-ui);font-size:13px;padding:8px 13px;border:1px solid var(--paper3);border-radius:var(--r);outline:none" placeholder="Concept 2 — e.g. indigo block print saree" id="c2"/>
+        <input type="text" style="font-family:var(--ff-ui);font-size:13px;padding:8px 13px;border:1px solid var(--paper3);border-radius:var(--r);outline:none" placeholder="Concept 3 (optional)" id="c3"/>
+        <input type="text" style="font-family:var(--ff-ui);font-size:13px;padding:8px 13px;border:1px solid var(--paper3);border-radius:var(--r);outline:none" placeholder="Concept 4 (optional)" id="c4"/>
+      </div>
+      <div class="grid2" style="gap:10px;margin-bottom:14px">
+        <div class="field"><label>Geography</label>
+          <select id="cmp-geo"><option value="IN">India (all)</option><option value="IN-MH">Maharashtra</option><option value="IN-DL">Delhi NCR</option><option value="IN-WB">West Bengal</option></select>
+        </div>
+        <div class="field"><label>Timeframe</label>
+          <select id="cmp-tf"><option value="today 3-m">Last 3 months</option><option value="today 12-m" selected>Last 12 months</option><option value="today 5-y">Last 5 years</option></select>
+        </div>
+      </div>
+      <button class="btn btn-dark" onclick="runCompare()"><i class="fa-solid fa-arrows-left-right"></i> Run comparison</button>
+    </div>
+    <div class="error-box" id="cmp-error"></div>
+    <div class="loading" id="cmp-loading"><div class="spinner"></div><div style="font-size:11px;color:var(--ink3);font-family:var(--ff-mono)">Fetching data for all concepts... (may take 20–40 seconds due to rate limits)</div></div>
+    <div id="cmp-result" style="display:none">
+      <div class="sec">Results</div>
+      <div id="cmp-cards" style="display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:18px"></div>
+      <div class="chart-box" style="margin-bottom:14px">
+        <div class="chart-title">Comparative search interest</div>
+        <div style="position:relative;height:220px"><canvas id="cmp-chart" role="img" aria-label="Comparison chart"></canvas></div>
+      </div>
+      <div class="sec">Summary table</div>
+      <div id="cmp-table" style="overflow-x:auto"></div>
+    </div>
+  </div>
+
+  <!-- WATCHLIST -->
+  <div class="panel" id="panel-watchlist">
+    <div class="btn-row" style="margin-bottom:18px">
+      <button class="btn btn-dark" onclick="runWatchlist()"><i class="fa-solid fa-play"></i> Run all (weekly scan)</button>
+      <button class="btn btn-outline" onclick="clearWL()"><i class="fa-solid fa-trash"></i> Clear all</button>
+    </div>
+    <div id="wl-items"></div>
+    <div class="loading" id="wl-loading" style="margin-top:14px"><div class="spinner"></div><div style="font-size:11px;color:var(--ink3);font-family:var(--ff-mono)" id="wl-load-text">Running...</div></div>
+    <div class="divider"></div>
+    <div class="sec">Add concept manually</div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap">
+      <input type="text" id="wl-new" placeholder="e.g. tiered anarkali" style="flex:1;min-width:160px;font-family:var(--ff-ui);font-size:13px;padding:9px 13px;border:1px solid var(--paper3);border-radius:var(--r);outline:none"/>
+      <select id="wl-geo" style="font-family:var(--ff-ui);font-size:12px;padding:9px 11px;border:1px solid var(--paper3);border-radius:var(--r);outline:none">
+        <option value="IN">India</option><option value="IN-MH">Maharashtra</option><option value="IN-DL">Delhi NCR</option><option value="IN-WB">West Bengal</option>
+      </select>
+      <button class="btn btn-dark" onclick="addWL()"><i class="fa-solid fa-plus"></i> Add</button>
+    </div>
+  </div>
+
+  <!-- ALERTS -->
+  <div class="panel" id="panel-alerts">
+    <div class="card" style="margin-bottom:18px;max-width:500px">
+      <div class="sec">Alert threshold</div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="flex:1;font-size:12px;color:var(--ink2);line-height:1.6">Fire alert when velocity (last-quarter minus first-quarter interest) crosses ± this value.</div>
+        <input type="number" id="alert-thresh" value="10" min="1" max="50" style="width:72px;font-family:var(--ff-mono);font-size:14px;padding:7px 10px;border:1px solid var(--paper3);border-radius:var(--r);text-align:center;outline:none"/>
+      </div>
+    </div>
+    <div class="btn-row" style="margin-bottom:14px">
+      <button class="btn btn-outline" onclick="clearAlertsAPI()"><i class="fa-solid fa-trash"></i> Clear log</button>
+    </div>
+    <div class="sec">Alerts log</div>
+    <div id="alerts-list"></div>
+  </div>
+
+  <!-- REGIONAL -->
+  <div class="panel" id="panel-regional">
+    <p style="font-size:12px;color:var(--ink2);line-height:1.75;margin-bottom:18px;max-width:560px">Scans the same concept across all 8 Indian regions and shows relative interest by state. Note: this makes 8 separate API calls and may take 2–4 minutes due to Google Trends rate limits.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px">
+      <input type="text" id="reg-concept" placeholder="e.g. block print kurti" style="flex:1;min-width:190px;font-family:var(--ff-ui);font-size:13px;padding:9px 13px;border:1px solid var(--paper3);border-radius:var(--r);outline:none"/>
+      <select id="reg-tf" style="font-family:var(--ff-ui);font-size:12px;padding:9px 11px;border:1px solid var(--paper3);border-radius:var(--r);outline:none">
+        <option value="today 3-m">Last 3 months</option><option value="today 12-m" selected>Last 12 months</option>
+      </select>
+      <button class="btn btn-dark" onclick="runRegional()"><i class="fa-solid fa-map-location-dot"></i> Run regional scan</button>
+    </div>
+    <div class="error-box" id="reg-error"></div>
+    <div class="loading" id="reg-loading"><div class="spinner"></div><div style="font-size:11px;color:var(--ink3);font-family:var(--ff-mono)" id="reg-load-text">Fetching regional data (8 states)... this takes 2–4 minutes.</div></div>
+    <div id="reg-result" style="display:none">
+      <div class="chart-box" style="margin-bottom:14px">
+        <div class="chart-title" id="reg-chart-title"></div>
+        <div style="position:relative;height:260px"><canvas id="reg-chart" role="img" aria-label="Regional interest bar chart"></canvas></div>
+      </div>
+      <div id="reg-cards" style="display:grid;grid-template-columns:repeat(4,1fr);gap:9px"></div>
+    </div>
+  </div>
+
+  <!-- SEASONAL -->
+  <div class="panel" id="panel-seasonal">
+    <p style="font-size:12px;color:var(--ink2);line-height:1.75;margin-bottom:18px;max-width:560px">India's ethnic retail calendar. Use as reference for OTB order placement timing.</p>
+    <div id="seasonal-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px"></div>
+    <div class="divider"></div>
+    <div class="sec">Key OTB planning windows</div>
+    <div class="grid2" style="gap:12px">
+      <div class="card-sm"><div style="font-size:11px;font-weight:600;color:var(--accent);margin-bottom:5px">Festive (Navratri, Durga Puja, Diwali)</div><div style="font-size:11px;color:var(--ink2);line-height:1.6">Place OTB by <strong>June–July</strong> for Aug–Oct delivery. Terracotta, rust, gold, mirror work, bandhani peak here.</div></div>
+      <div class="card-sm"><div style="font-size:11px;font-weight:600;color:var(--blue);margin-bottom:5px">Wedding season (Nov–Feb)</div><div style="font-size:11px;color:var(--ink2);line-height:1.6">Order lehengas, sharara, heavy embroidery by <strong>Sep–Oct</strong>. Silk, chanderi, zari peak here.</div></div>
+      <div class="card-sm"><div style="font-size:11px;font-weight:600;color:var(--teal);margin-bottom:5px">Spring/Summer casual (Mar–May)</div><div style="font-size:11px;color:var(--ink2);line-height:1.6">Linen, cotton, block print kurtis. Order by <strong>Dec–Jan</strong>.</div></div>
+      <div class="card-sm"><div style="font-size:11px;font-weight:600;color:var(--gold);margin-bottom:5px">Monsoon test-buy window (Jun–Jul)</div><div style="font-size:11px;color:var(--ink2);line-height:1.6">Low demand. Use this window to test-buy emerging niche trends at minimal depth.</div></div>
+    </div>
+  </div>
+
+  <!-- METHODOLOGY -->
+  <div class="panel" id="panel-methodology">
+    <p style="font-size:12px;color:var(--ink2);line-height:1.75;max-width:580px;margin-bottom:26px">Google Trends returns a 0–100 relative interest index, not raw search counts. This tool computes a composite score from three components — Volume, Momentum, Recency — weighted to generate buying mandates.</p>
+    <div class="sec">Scoring model</div>
+    <div class="meth-step"><div class="meth-num">1</div><div><div class="meth-title">Volume (weight: 30%)</div><div class="meth-desc">Anchor-normalised mean interest. Divides the concept's average by the parent category average (e.g. "kurti", "ethnic wear india") to correct for scale differences between garment categories.</div><div class="formula-box">volume = min(100, (mean(series) / mean(anchor)) × 100)</div></div></div>
+    <div class="meth-step"><div class="meth-num">2</div><div><div class="meth-title">Momentum (weight: 40%)</div><div class="meth-desc">Linear regression slope across the entire time window, normalised by mean interest. A slope of +2 on a term averaging 5 is more significant than +2 on a term averaging 80.</div><div class="formula-box">slope, _ = polyfit(time_index, series, degree=1)
+momentum = clip((slope / (mean + ε)) × 1000 + 50, 0, 100)</div></div></div>
+    <div class="meth-step"><div class="meth-num">3</div><div><div class="meth-title">Recency (weight: 30%)</div><div class="meth-desc">Compares last quarter of the time window against the first quarter. Captures whether interest is accelerating in the recent period specifically.</div><div class="formula-box">recency = clip((mean(last_25%) / (mean(first_25%) + ε) − 0.5) × 66.7, 0, 100)</div></div></div>
+    <div class="meth-step"><div class="meth-num">4</div><div><div class="meth-title">Velocity (alert trigger)</div><div class="meth-desc">Raw index-point difference between last and first quarters. Used as the alert threshold trigger.</div><div class="formula-box">velocity = mean(last_25%) − mean(first_25%)   [in Google Trends index points]</div></div></div>
+    <div class="meth-step"><div class="meth-num">5</div><div><div class="meth-title">Pearson correlation — time vs interest</div><div class="meth-desc">Linear monotonicity between the time sequence [0,1,2,...,n] and the interest values. High positive = consistently rising. Note: late-stage viral breakouts score lower on this despite strong velocity.</div><div class="formula-box">corr = corrcoef([0,1,...,n], interest_values)[0,1]</div></div></div>
+    <div class="meth-step"><div class="meth-num">6</div><div><div class="meth-title">Composite score &amp; mandate</div><div class="formula-box">score = volume×0.30 + momentum×0.40 + recency×0.30
+
+[BUY]        score ≥ 65 AND velocity > 3
+[BUY/HOLD]   score ≥ 65
+[HOLD]       score ≥ 40 AND velocity > 1
+[HOLD/WATCH] score ≥ 40
+[WATCH]      score ≥ 20 AND velocity > 0
+[EXIT]       everything else</div></div></div>
+  </div>
+
+  <!-- DEPLOY -->
+  <div class="panel" id="panel-deploy">
+    <p style="font-size:12px;color:var(--ink2);line-height:1.75;max-width:580px;margin-bottom:20px">Step-by-step guide to deploy this tool as a working public website. Recommended option: <strong>Render.com free tier</strong> — your Flask backend + this HTML frontend, live in ~20 minutes, free forever.</p>
+    <div class="sec">Step-by-step deployment</div>
+    <div class="deploy-step"><div class="deploy-num">1</div><div><div class="deploy-title">Make sure you have these 3 files in one folder</div><div class="deploy-desc">Download the files Claude generated: <code>api.py</code>, <code>index.html</code>, <code>requirements.txt</code>. Put them all in one folder, e.g. <code>trendintel/</code>. Also copy your existing <code>trend_intelligence.py</code> into that same folder.</div></div></div>
+    <div class="deploy-step"><div class="deploy-num">2</div><div><div class="deploy-title">Test locally first</div><div class="deploy-desc">Open a terminal, navigate to the folder, then run:</div><div class="code-block">cd trendintel
+pip install -r requirements.txt
+python api.py
+<button class="code-copy" onclick="cpCode(this)">copy</button></div><div class="deploy-desc" style="margin-top:8px">Open <strong>http://localhost:5000</strong> in your browser. All buttons should now call the real backend. Test a scan to confirm data loads.</div></div></div>
+    <div class="deploy-step"><div class="deploy-num">3</div><div><div class="deploy-title">Create a free GitHub account and upload your files</div><div class="deploy-desc">Go to <strong>github.com</strong> → Sign up (free) → New repository → name it "trend-intel" → upload the 4 files: <code>api.py</code>, <code>index.html</code>, <code>requirements.txt</code>, <code>trend_intelligence.py</code></div><div class="deploy-desc" style="margin-top:6px">Or if you have Git installed, run this in your terminal:</div><div class="code-block">git init
+git add .
+git commit -m "initial deploy"
+git branch -M main
+git remote add origin https://github.com/YOUR_USERNAME/trend-intel.git
+git push -u origin main
+<button class="code-copy" onclick="cpCode(this)">copy</button></div></div></div>
+    <div class="deploy-step"><div class="deploy-num">4</div><div><div class="deploy-title">Deploy for free on Render.com</div><div class="deploy-desc">Go to <strong>render.com</strong> → Sign up with GitHub → Click "New +" → "Web Service" → Connect your GitHub repo → Fill in these settings:</div><div class="code-block">Name:          trend-intel
+Runtime:       Python 3
+Build command: pip install -r requirements.txt
+Start command: gunicorn api:app
+<button class="code-copy" onclick="cpCode(this)">copy</button></div><div class="deploy-desc" style="margin-top:8px">Click "Create Web Service". Render builds your app automatically. Takes about 3–5 minutes. Your live URL will be: <strong>https://trend-intel.onrender.com</strong></div></div></div>
+    <div class="deploy-step"><div class="deploy-num">5</div><div><div class="deploy-title">Your app is now live. Share the URL.</div><div class="deploy-desc">Open the Render URL in any browser — your full app with real Google Trends data is live. Share this URL with your college supervisor or retail team. The free Render tier "sleeps" after 15 min of no traffic (takes ~30 seconds to wake up on next visit) — this is fine for demos.</div></div></div>
+    <div class="deploy-step"><div class="deploy-num">6</div><div><div class="deploy-title">Optional: Add login so only your team can use it</div><div class="deploy-desc">Add these lines at the top of <code>api.py</code> to password-protect the app:</div><div class="code-block">from flask_httpauth import HTTPBasicAuth
+from werkzeug.security import generate_password_hash, check_password_hash
+
+auth = HTTPBasicAuth()
+users = {"admin": generate_password_hash("yourpassword123")}
+
+@auth.verify_password
+def verify(username, password):
+    if username in users and check_password_hash(users[username], password):
+        return username
+
+# then add @auth.login_required above every @app.route
+<button class="code-copy" onclick="cpCode(this)">copy</button></div></div></div>
+    <div class="deploy-step"><div class="deploy-num">7</div><div><div class="deploy-title">If anything breaks — common fixes</div><div class="deploy-desc"><strong>Error "No data found":</strong> Google Trends blocked the request. Wait 10 minutes and try again with a simpler term (just "kurti" not "rust linen kurti").<br><br><strong>App not loading on Render:</strong> Check the Render dashboard logs — usually a missing package. Add it to requirements.txt and push to GitHub again.<br><br><strong>"pytrends not installed":</strong> Make sure requirements.txt has <code>pytrends==4.9.2</code> and re-deploy.<br><br><strong>Rate limit errors in watchlist:</strong> The watchlist runner waits 8 seconds between items. For large watchlists (10+ items), run off-peak hours.</div></div></div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="panel" id="panel-settings">
+    <div class="card" style="max-width:580px">
+      <div class="sec">Preferences</div>
+      <div class="settings-row"><div class="settings-info"><div class="settings-label">Auto-fetch related queries</div><div class="settings-desc">Always fetch related &amp; rising queries after every scan.</div></div><button class="switch" id="sw-related" onclick="this.classList.toggle('on')"><div class="switch-thumb"></div></button></div>
+      <div class="settings-row"><div class="settings-info"><div class="settings-label">Auto-save to watchlist</div><div class="settings-desc">Every scanned concept is automatically added to watchlist.</div></div><button class="switch" id="sw-autowl" onclick="this.classList.toggle('on')"><div class="switch-thumb"></div></button></div>
+      <div class="divider"></div>
+      <div class="sec">Data</div>
+      <div class="settings-row"><div class="settings-info"><div class="settings-label">Clear local data</div><div class="settings-desc">Removes session scan history from the browser.</div></div><button class="btn btn-danger" onclick="clearLocal()"><i class="fa-solid fa-trash"></i> Clear</button></div>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <div class="panel" id="panel-about">
+    <div class="about-hero">
+      <div class="about-tag">Graduation Project · 2025</div>
+      <div class="about-h">Data-Centric: Resource-Efficient AI Framework<br>for Competitive Value Retail</div>
+      <div class="about-p">An AI-based trend forecasting system built during a 16-week internship (Dec 2024 – Apr 2025) at an ethnic value retail company in India. Born from a real gap observed on the buying floor.</div>
+    </div>
+    <div class="grid2" style="gap:18px;margin-bottom:22px">
+      <div>
+        <div class="sec">The problem observed</div>
+        <div class="gap-card"><div class="gap-title">Selection based solely on historic sales</div><div style="font-size:11px;color:var(--ink2);line-height:1.6">The buying team relied on past bestsellers and STR data — no visibility into emerging consumer search demand.</div></div>
+        <div class="gap-card"><div class="gap-title">High cost of commercial forecasters</div><div style="font-size:11px;color:var(--ink2);line-height:1.6">WGSN, Trendalytics etc. start at ₹5–15L/year — inaccessible for value retailers with thin margins.</div></div>
+        <div class="gap-card"><div class="gap-title">No regional granularity</div><div style="font-size:11px;color:var(--ink2);line-height:1.6">National trend reports don't show how demand for block print differs between West Bengal and Gujarat.</div></div>
+        <div class="gap-card"><div class="gap-title">Qualitative guesswork</div><div style="font-size:11px;color:var(--ink2);line-height:1.6">Decisions relied on Pinterest, competitor floor walks, buyer intuition — no data backbone.</div></div>
+      </div>
+      <div>
+        <div class="sec">The solution</div>
+        <div class="sol-card"><div class="sol-title">Open-source Google Trends data</div><div style="font-size:11px;color:var(--ink2);line-height:1.6">Zero licensing cost. Search demand as a proxy for consumer intent.</div></div>
+        <div class="sol-card"><div class="sol-title">Regional granularity at state level</div><div style="font-size:11px;color:var(--ink2);line-height:1.6">8 Indian state filters — compare how a trend performs across regions before buying.</div></div>
+        <div class="sol-card"><div class="sol-title">Quantified buying mandates</div><div style="font-size:11px;color:var(--ink2);line-height:1.6">BUY / HOLD / WATCH / EXIT based on velocity and correlation — removes gut-feel from OTB.</div></div>
+        <div class="sol-card"><div class="sol-title">Lean &amp; sustainable buying</div><div style="font-size:11px;color:var(--ink2);line-height:1.6">Exit signals prevent over-buying declining trends — reduces markdowns and working capital lock-in.</div></div>
+      </div>
+    </div>
+    <div class="sec">Internship timeline</div>
+    <div class="timeline">
+      <div class="tl-item"><div class="tl-date">Dec 2024 – Jan 2025</div><div class="tl-title">Gap identification</div><div class="tl-desc">Observed buying process, identified reliance on historic STR and absence of emerging trend signals.</div></div>
+      <div class="tl-item"><div class="tl-date">Jan – Feb 2025</div><div class="tl-title">v1–v3 development</div><div class="tl-desc">Built basic pytrends scanner. Fixed urllib3 compatibility, rate-limit handling, negative score bugs.</div></div>
+      <div class="tl-item"><div class="tl-date">Feb – Mar 2025</div><div class="tl-title">v4: Smart concept parser</div><div class="tl-desc">Added color, silhouette, print, and fabric detection. Anchor normalisation for composite scoring.</div></div>
+      <div class="tl-item"><div class="tl-date">Mar – Apr 2025</div><div class="tl-title">v5: Related queries, watchlist &amp; alerts</div><div class="tl-desc">Added related query extraction (next-season leads), weekly watchlist runner, and velocity alert system.</div></div>
+      <div class="tl-item"><div class="tl-date">Apr 2025</div><div class="tl-title">Graduation project submission</div><div class="tl-desc">Thesis: Data-Centric, Resource-Efficient AI Framework for Competitive Value Retail.</div></div>
+    </div>
+  </div>
+
+  </div>
+</main>
+
+<script>
+// ── CONFIG ──
+const API = "";  // empty = same origin (Flask serves index.html). Change to "http://localhost:5000" if running frontend separately.
+const PALETTE = ['#c8531a','#0f6e56','#ba7517','#534ab7','#a32d2d'];
+const PAGES = {dashboard:'Dashboard',scanner:'Scanner',compare:'Compare',watchlist:'Watchlist',alerts:'Alerts',regional:'Regional Pulse',seasonal:'Seasonal Calendar',methodology:'Methodology',deploy:'Deploy Guide',settings:'Settings',about:'About Project'};
+
+let scanCount=0, lastConcept='—', activityLog=[];
+let trendChart=null, cmpChart=null, regChart=null;
+const opts={related:false,wl:false};
+
+// ── NAV ──
+function go(page){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+page).classList.add('active');
+  const label=PAGES[page]||page;
+  document.getElementById('topbar-title').textContent=label;
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    if(n.textContent.trim().toLowerCase().startsWith(label.toLowerCase().substring(0,5)))n.classList.add('active');
+  });
+  if(page==='watchlist')loadWL();
+  if(page==='alerts')loadAlerts();
+  if(page==='dashboard')updateDash();
+  if(page==='seasonal')renderSeasonal();
+  window.scrollTo(0,0);
+}
+
+// ── TAG INSERT ──
+function at(t){
+  const inp=document.getElementById('concept-input');
+  const cur=inp.value.trim();
+  inp.value=(cur&&!cur.endsWith(' '))?cur+' '+t:cur+t;
+  inp.focus();
+}
+
+// ── TOGGLES ──
+function toggleOpt(el,k){opts[k]=!opts[k];el.classList.toggle('on',opts[k]);}
+
+// ── HELPERS ──
+function showError(id,msg){const el=document.getElementById(id);el.textContent=msg;el.classList.add('show');}
+function hideError(id){const el=document.getElementById(id);el.classList.remove('show');}
+function mandateCls(label){
+  if(label.includes('BUY/HOLD'))return 'm-buy';
+  if(label.includes('BUY'))return 'm-buy';
+  if(label.includes('HOLD/WATCH'))return 'm-watch';
+  if(label.includes('HOLD'))return 'm-hold';
+  if(label.includes('WATCH'))return 'm-watch';
+  return 'm-exit';
+}
+
+function stepLoading(steps,interval=900){
+  let si=0;
+  steps.forEach(s=>{const el=document.getElementById(s);if(el)el.classList.remove('on');});
+  if(steps[0]){const el=document.getElementById(steps[0]);if(el)el.classList.add('on');}
+  return setInterval(()=>{
+    si++;
+    steps.forEach(s=>{const el=document.getElementById(s);if(el)el.classList.remove('on');});
+    if(si<steps.length){const el=document.getElementById(steps[si]);if(el)el.classList.add('on');}
+  },interval);
+}
+
+function logActivity(html){
+  activityLog.unshift({html,time:new Date()});
+  if(activityLog.length>8)activityLog.pop();
+}
+function updateDash(){
+  document.getElementById('dm-scans').textContent=scanCount;
+  document.getElementById('dm-last').textContent=lastConcept.length>14?lastConcept.slice(0,14)+'…':lastConcept;
+  const el=document.getElementById('dash-activity');
+  if(!activityLog.length){el.innerHTML='<div style="font-size:12px;color:var(--ink3);padding:10px 0">Run your first scan to see activity here.</div>';return;}
+  el.innerHTML=activityLog.map(a=>`<div class="activity-item"><div class="activity-dot" style="background:var(--accent)"></div><div class="activity-text">${a.html}</div><div class="activity-time">${a.time.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}</div></div>`).join('');
+}
+function updateBadges(wlCount,alertCount){
+  if(wlCount!==undefined){document.getElementById('wl-badge').textContent=wlCount;document.getElementById('dm-wl')&&(document.getElementById('dm-wl').textContent=wlCount);}
+  if(alertCount!==undefined){document.getElementById('alert-badge').textContent=alertCount;document.getElementById('dm-alerts')&&(document.getElementById('dm-alerts').textContent=alertCount);}
+}
+
+function renderScoreResult(data,concept,geo,tf){
+  const sc=data.score,man=data.mandate;
+  document.getElementById('r-title').textContent=concept.toUpperCase();
+  document.getElementById('r-subtitle').textContent=(data.geo_label||geo)+' · '+tf;
+  const badge=document.getElementById('r-mandate');
+  badge.textContent=man.label;badge.className='mandate '+mandateCls(man.label);
+  document.getElementById('r-score').textContent=sc.score;
+  const circ=207.3,circle=document.getElementById('score-circle');
+  circle.style.strokeDashoffset=(circ-(sc.score/100)*circ).toFixed(1);
+  circle.style.stroke=sc.score>=65?'#0f6e56':sc.score>=40?'#ba7517':'#c8531a';
+  document.getElementById('r-horizon-short').textContent=data.horizon;
+  document.getElementById('r-chips').innerHTML=
+    `<span class="chip">vel ${sc.velocity>0?'+':''}${sc.velocity}</span><span class="chip">corr ${sc.corr}</span><span class="chip">${data.parsed?.garment||'—'}</span>`;
+  document.getElementById('r-vol').textContent=sc.volume;
+  document.getElementById('r-mom').textContent=sc.momentum;
+  document.getElementById('r-rec').textContent=sc.recency;
+  document.getElementById('bv').style.width=sc.volume+'%';
+  document.getElementById('bm').style.width=sc.momentum+'%';
+  document.getElementById('br').style.width=sc.recency+'%';
+  const vf=document.getElementById('vel-fill'),vel=sc.velocity;
+  if(vel>=0){vf.style.left='50%';vf.style.width=Math.min(vel/50*50,50)+'%';vf.style.background='#0f6e56';}
+  else{const w=Math.min(Math.abs(vel)/50*50,50);vf.style.left=(50-w)+'%';vf.style.width=w+'%';vf.style.background='#c8531a';}
+  document.getElementById('vel-val').textContent=(vel>0?'+':'')+vel;
+  document.getElementById('r-rationale').innerHTML='<strong>'+man.confidence+' confidence</strong> — '+man.rationale;
+  document.getElementById('r-horizon').textContent=data.horizon;
+  document.getElementById('r-season').textContent=data.seasonal||'—';
+  document.getElementById('r-garment').textContent=data.parsed?.garment||'auto-detected';
+  document.getElementById('r-corr').textContent=sc.corr+' (time vs interest, Pearson)';
+
+  if(trendChart)trendChart.destroy();
+  trendChart=new Chart(document.getElementById('trend-chart'),{
+    type:'line',
+    data:{labels:data.dates,datasets:[{label:concept,data:data.series,borderColor:'#c8531a',backgroundColor:'rgba(200,83,26,.07)',borderWidth:2,pointRadius:0,tension:.4,fill:true}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#9a8f87',font:{size:9},maxTicksLimit:8},grid:{color:'rgba(0,0,0,.04)'}},y:{min:0,max:100,ticks:{color:'#9a8f87',font:{size:9}},grid:{color:'rgba(0,0,0,.04)'}}}}
+  });
+
+  const rel=data.related;
+  if(rel&&(rel.top?.length||rel.rising?.length)){
+    document.getElementById('related-section').style.display='block';
+    const top=rel.top||[],rising=rel.rising||[];
+    document.getElementById('rq-grid').innerHTML=`
+      <div class="rq-card"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);margin-bottom:9px">Top queries</div>
+      ${top.map(r=>`<div class="rq-item"><span>${r.query}</span><span class="rq-val">${r.value}</span></div>`).join('')||'<div style="font-size:11px;color:var(--ink3)">No data</div>'}</div>
+      <div class="rq-card"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);margin-bottom:9px">Rising — next-season leads</div>
+      ${rising.map(r=>`<div class="rq-item"><span>${r.query}</span>${r.value==='Breakout'?'<span class="rq-breakout">Breakout</span>':`<span class="rq-val">${r.value}</span>`}</div>`).join('')||'<div style="font-size:11px;color:var(--ink3)">No data</div>'}</div>`;
+  }else{document.getElementById('related-section').style.display='none';}
+}
+
+// ── SCANNER ──
+async function runScan(){
+  const concept=document.getElementById('concept-input').value.trim();
+  if(!concept){alert('Please enter a concept.');return;}
+  const geo=document.getElementById('geo-select').value;
+  const tf=document.getElementById('tf-select').value;
+  const thresh=parseFloat(document.getElementById('alert-thresh').value||10);
+
+  hideError('scan-error');
+  document.getElementById('scan-result').style.display='none';
+  const ld=document.getElementById('scan-loading');
+  ld.classList.add('show');
+  const iv=stepLoading(['ls1','ls2','ls3','ls4'],1100);
+
+  try{
+    const res=await fetch(`${API}/api/scan`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({concept,geo,tf,related:opts.related,alert_threshold:thresh})
+    });
+    clearInterval(iv);ld.classList.remove('show');
+
+    if(!res.ok){
+      const err=await res.json();
+      showError('scan-error',err.error||'Unknown error. Please try again.');
+      return;
+    }
+    const data=await res.json();
+    renderScoreResult(data,concept,geo,tf);
+
+    if(opts.wl)await apiAddWL(concept,geo,tf);
+    scanCount++;lastConcept=concept;
+    logActivity(`Scanned: <strong>${concept}</strong> — ${data.mandate.label} (score ${data.score.score})`);
+    updateDash();
+    if(data.alert?.fired)loadAlerts();
+
+    document.getElementById('scan-result').style.display='block';
+    document.getElementById('scan-result').scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(e){
+    clearInterval(iv);ld.classList.remove('show');
+    showError('scan-error','Cannot reach backend. Make sure api.py is running at localhost:5000, or that the app is deployed.');
+  }
+}
+
+async function saveCurrentToWL(){
+  const c=document.getElementById('concept-input').value.trim();
+  const g=document.getElementById('geo-select').value;
+  const t=document.getElementById('tf-select').value;
+  if(c){await apiAddWL(c,g,t);go('watchlist');}
+}
+function copyReport(){
+  const concept=document.getElementById('r-title').textContent;
+  const score=document.getElementById('r-score').textContent;
+  const mandate=document.getElementById('r-mandate').textContent;
+  const horizon=document.getElementById('r-horizon').textContent;
+  navigator.clipboard.writeText(`TREND REPORT: ${concept}\nScore: ${score}/100\nMandate: ${mandate}\nHorizon: ${horizon}\nGenerated by Trend Intelligence v5.0`).then(()=>alert('Report copied to clipboard.'));
+}
+
+// ── COMPARE ──
+async function runCompare(){
+  const concepts=[1,2,3,4].map(i=>document.getElementById('c'+i).value.trim()).filter(Boolean);
+  if(concepts.length<2){alert('Enter at least 2 concepts.');return;}
+  const geo=document.getElementById('cmp-geo').value;
+  const tf=document.getElementById('cmp-tf').value;
+
+  hideError('cmp-error');
+  document.getElementById('cmp-result').style.display='none';
+  const ld=document.getElementById('cmp-loading');
+  ld.classList.add('show');
+
+  try{
+    const res=await fetch(`${API}/api/compare`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({concepts,geo,tf})});
+    ld.classList.remove('show');
+    if(!res.ok){const err=await res.json();showError('cmp-error',err.error||'Error');return;}
+    const data=await res.json();
+    const results=data.results;
+
+    document.getElementById('cmp-cards').innerHTML=results.map((r,i)=>{
+      if(r.error)return`<div class="compare-card"><div style="font-size:12px;font-weight:600;margin-bottom:8px">${r.concept}</div><div style="font-size:11px;color:var(--red)">No data returned</div></div>`;
+      const m=r.mandate,sc=r.score;
+      return`<div class="compare-card"><div style="position:absolute;top:0;left:0;right:0;height:3px;background:${PALETTE[i]};border-radius:var(--rL) var(--rL) 0 0"></div>
+        <div style="font-size:12px;font-weight:600;margin:6px 0 9px">${r.concept}</div>
+        <div style="font-family:var(--ff-mono);font-size:36px;font-weight:500;line-height:1">${sc.score}</div>
+        <div style="font-size:9px;color:var(--ink3);margin-bottom:10px">/ 100 trend score</div>
+        <div class="cbar-row"><span style="min-width:60px;font-size:9px;text-transform:uppercase;letter-spacing:.04em">Volume</span><div class="cbar-track"><div class="cbar-fill" style="width:${sc.volume}%;background:${PALETTE[i]}"></div></div><span>${sc.volume}</span></div>
+        <div class="cbar-row"><span style="min-width:60px;font-size:9px;text-transform:uppercase;letter-spacing:.04em">Momentum</span><div class="cbar-track"><div class="cbar-fill" style="width:${sc.momentum}%;background:${PALETTE[i]}"></div></div><span>${sc.momentum}</span></div>
+        <div class="cbar-row"><span style="min-width:60px;font-size:9px;text-transform:uppercase;letter-spacing:.04em">Recency</span><div class="cbar-track"><div class="cbar-fill" style="width:${sc.recency}%;background:${PALETTE[i]}"></div></div><span>${sc.recency}</span></div>
+        <div style="margin-top:11px"><span class="mandate ${mandateCls(m.label)}">${m.label}</span></div>
+      </div>`;
+    }).join('');
+
+    const validResults=results.filter(r=>!r.error&&r.series);
+    if(cmpChart)cmpChart.destroy();
+    if(validResults.length){
+      cmpChart=new Chart(document.getElementById('cmp-chart'),{
+        type:'line',
+        data:{labels:validResults[0].dates,datasets:validResults.map((r,i)=>({label:r.concept,data:r.series,borderColor:PALETTE[i],borderWidth:2,pointRadius:0,tension:.4}))},
+        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#5a4f47',font:{size:10},boxWidth:9}}},scales:{x:{ticks:{color:'#9a8f87',font:{size:9},maxTicksLimit:7},grid:{color:'rgba(0,0,0,.04)'}},y:{min:0,max:100,ticks:{color:'#9a8f87',font:{size:9}},grid:{color:'rgba(0,0,0,.04)'}}}}
+      });
+    }
+    document.getElementById('cmp-table').innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:11px">
+      <thead><tr style="border-bottom:1px solid var(--paper3)">${['Concept','Score','Velocity','Vol','Mom','Rec','Mandate'].map(h=>`<th style="text-align:left;padding:7px 9px;font-weight:700;color:var(--ink3);text-transform:uppercase;font-size:9px;letter-spacing:.05em">${h}</th>`).join('')}</tr></thead>
+      <tbody>${results.map(r=>{if(r.error)return`<tr><td style="padding:7px 9px">${r.concept}</td><td colspan="6" style="padding:7px 9px;color:var(--red)">No data</td></tr>`;const m=r.mandate,sc=r.score;return`<tr style="border-bottom:1px solid var(--paper3)"><td style="padding:7px 9px;font-weight:500">${r.concept}</td><td style="padding:7px 9px;font-family:var(--ff-mono)">${sc.score}</td><td style="padding:7px 9px;font-family:var(--ff-mono);color:${sc.velocity>=0?'#0f6e56':'#c8531a'}">${sc.velocity>0?'+':''}${sc.velocity}</td><td style="padding:7px 9px;font-family:var(--ff-mono)">${sc.volume}</td><td style="padding:7px 9px;font-family:var(--ff-mono)">${sc.momentum}</td><td style="padding:7px 9px;font-family:var(--ff-mono)">${sc.recency}</td><td style="padding:7px 9px"><span class="mandate ${mandateCls(m.label)}" style="font-size:9px;padding:2px 8px">${m.label}</span></td></tr>`;}).join('')}</tbody></table>`;
+    document.getElementById('cmp-result').style.display='block';
+  }catch(e){ld.classList.remove('show');showError('cmp-error','Cannot reach backend. Make sure api.py is running.');}
+}
+
+// ── WATCHLIST ──
+async function loadWL(){
+  try{
+    const res=await fetch(`${API}/api/watchlist`);
+    const wl=await res.json();
+    updateBadges(wl.length);
+    const el=document.getElementById('wl-items');
+    if(!wl.length){el.innerHTML='<div style="font-size:12px;color:var(--ink3);padding:22px 0;text-align:center">Watchlist empty. Save concepts from the scanner to track weekly.</div>';return;}
+    el.innerHTML=wl.map((w,i)=>`<div class="wl-item">
+      <div class="wl-dot" style="background:${PALETTE[i%PALETTE.length]}"></div>
+      <div style="flex:1"><div class="wl-name">${w.concept}</div>
+      <div class="wl-meta">${w.geo||'IN'} · ${new Date(w.added).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}${w.score!=null?' · score '+w.score:''}</div></div>
+      ${w.score!=null?`<span style="font-family:var(--ff-mono);font-size:13px;font-weight:500;color:${w.score>=65?'#0f6e56':w.score>=40?'#ba7517':'#c8531a'}">${w.score}</span>`:''}
+      <button class="btn btn-outline" style="padding:4px 10px;font-size:10px" onclick="removeWL(${i})">Remove</button>
+    </div>`).join('');
+  }catch(e){document.getElementById('wl-items').innerHTML='<div style="font-size:12px;color:var(--red);padding:12px 0">Cannot load watchlist — is the backend running?</div>';}
+}
+async function apiAddWL(concept,geo,tf){
+  try{
+    const res=await fetch(`${API}/api/watchlist/add`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({concept,geo:geo||'IN',tf:tf||'today 12-m'})});
+    const data=await res.json();
+    updateBadges(data.count);
+  }catch(e){}
+}
+async function addWL(){
+  const c=document.getElementById('wl-new').value.trim();
+  const g=document.getElementById('wl-geo').value;
+  if(!c||c.length<3){alert('Enter at least 3 characters.');return;}
+  await apiAddWL(c,g,'today 12-m');
+  document.getElementById('wl-new').value='';
+  loadWL();
+}
+async function removeWL(idx){
+  await fetch(`${API}/api/watchlist/remove`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({index:idx})});
+  loadWL();
+}
+async function clearWL(){
+  if(!confirm('Clear entire watchlist?'))return;
+  const wl=await (await fetch(`${API}/api/watchlist`)).json();
+  for(let i=wl.length-1;i>=0;i--)await fetch(`${API}/api/watchlist/remove`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({index:i})});
+  loadWL();
+}
+async function runWatchlist(){
+  const thresh=parseFloat(document.getElementById('alert-thresh').value||10);
+  const ld=document.getElementById('wl-loading');
+  ld.classList.add('show');
+  document.getElementById('wl-load-text').textContent='Running all watchlist items (may take several minutes)...';
+  try{
+    const res=await fetch(`${API}/api/watchlist/run`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({alert_threshold:thresh})});
+    ld.classList.remove('show');
+    if(!res.ok){const err=await res.json();alert(err.error||'Error running watchlist.');return;}
+    await loadWL();
+    await loadAlerts();
+  }catch(e){ld.classList.remove('show');alert('Cannot reach backend.');}
+}
+
+// ── ALERTS ──
+async function loadAlerts(){
+  try{
+    const res=await fetch(`${API}/api/alerts`);
+    const lines=await res.json();
+    updateBadges(undefined,lines.length);
+    const el=document.getElementById('alerts-list');
+    if(!lines.length){el.innerHTML='<div style="font-size:12px;color:var(--ink3);padding:22px 0;text-align:center">No alerts yet. Run scans — velocity crossings appear here.</div>';return;}
+    el.innerHTML=lines.reverse().map(line=>{
+      const isSurge=line.includes('SURGE');
+      return`<div class="alert-item ${isSurge?'alert-surge':'alert-drop'}">
+        <i class="fa-solid ${isSurge?'fa-arrow-trend-up':'fa-arrow-trend-down'} alert-icon"></i>
+        <div style="font-size:11px;color:var(--ink2);font-family:var(--ff-mono);line-height:1.6">${line}</div>
+      </div>`;
+    }).join('');
+  }catch(e){document.getElementById('alerts-list').innerHTML='<div style="font-size:12px;color:var(--red);padding:12px 0">Cannot load alerts — is the backend running?</div>';}
+}
+async function clearAlertsAPI(){
+  if(!confirm('Clear all alerts?'))return;
+  await fetch(`${API}/api/alerts/clear`,{method:'POST'});
+  loadAlerts();
+}
+
+// ── REGIONAL ──
+async function runRegional(){
+  const concept=document.getElementById('reg-concept').value.trim();
+  const tf=document.getElementById('reg-tf').value;
+  if(!concept){alert('Enter a concept.');return;}
+  hideError('reg-error');
+  document.getElementById('reg-result').style.display='none';
+  const ld=document.getElementById('reg-loading');
+  ld.classList.add('show');
+  try{
+    const res=await fetch(`${API}/api/regional`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({concept,tf})});
+    ld.classList.remove('show');
+    if(!res.ok){const err=await res.json();showError('reg-error',err.error||'Error');return;}
+    const data=await res.json();
+    const results=data.results;
+    document.getElementById('reg-chart-title').textContent=`"${concept}" — search interest by region`;
+    if(regChart)regChart.destroy();
+    regChart=new Chart(document.getElementById('reg-chart'),{
+      type:'bar',
+      data:{labels:results.map(r=>r.region),datasets:[{label:'Interest index',data:results.map(r=>r.score),backgroundColor:results.map(r=>r.score>=60?'#0f6e56':r.score>=35?'#ba7517':'#c8531a'),borderRadius:4}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#9a8f87',font:{size:10}},grid:{display:false}},y:{min:0,max:100,ticks:{color:'#9a8f87',font:{size:9}},grid:{color:'rgba(0,0,0,.04)'}}}}
+    });
+    document.getElementById('reg-cards').innerHTML=results.map(r=>`<div class="metric-card"><div class="metric-label">${r.region}</div><div class="metric-val" style="font-size:20px;color:${r.score>=60?'#0f6e56':r.score>=35?'#ba7517':'#c8531a'}">${r.score}</div><div class="metric-sub">vel ${r.velocity>0?'+':''}${r.velocity}</div></div>`).join('');
+    document.getElementById('reg-result').style.display='block';
+  }catch(e){ld.classList.remove('show');showError('reg-error','Cannot reach backend. Make sure api.py is running.');}
+}
+
+// ── SEASONAL ──
+const MONTHS=[
+  {m:'Jan',peak:'Wedding season',items:'Lehenga, sharara, silk, zari',heat:90},
+  {m:'Feb',peak:'Wedding season',items:'Heavy embroidery, chanderi, net',heat:85},
+  {m:'Mar',peak:'Spring casual',items:'Cotton kurti, linen, block print',heat:60},
+  {m:'Apr',peak:'Summer',items:'Mul, rayon, light cotton, floral',heat:55},
+  {m:'May',peak:'Summer slow',items:'Clearance, pastel, cotton',heat:38},
+  {m:'Jun',peak:'Monsoon slow',items:'Test buys, niche trends',heat:28},
+  {m:'Jul',peak:'Pre-festive prep',items:'Order placement window',heat:33},
+  {m:'Aug',peak:'Festive starts',items:'Bandhani, mirror work, rust',heat:70},
+  {m:'Sep',peak:'Navratri/Onam',items:'Navratri ghagra, Kerala kasavu',heat:85},
+  {m:'Oct',peak:'Durga Puja / Diwali',items:'Silk, zari, gold, anarkali',heat:100},
+  {m:'Nov',peak:'Post-Diwali / Wedding',items:'Indo-western, co-ord, sharara',heat:90},
+  {m:'Dec',peak:'Wedding peak',items:'Lehenga, bridal, heavy',heat:85},
+];
+function renderSeasonal(){
+  document.getElementById('seasonal-grid').innerHTML=MONTHS.map(mo=>{
+    const c=mo.heat>=80?'var(--accent)':mo.heat>=60?'var(--gold)':mo.heat>=40?'#185fa5':'var(--ink3)';
+    return`<div class="card-sm" style="border-left:3px solid ${c}">
+      <div style="font-size:17px;font-weight:700;font-family:var(--ff-mono);color:${c};margin-bottom:3px">${mo.m}</div>
+      <div style="font-size:10px;font-weight:600;color:var(--ink2);margin-bottom:4px">${mo.peak}</div>
+      <div style="font-size:9px;color:var(--ink3);line-height:1.5">${mo.items}</div>
+      <div style="margin-top:7px;height:3px;background:var(--paper3);border-radius:99px"><div style="height:100%;width:${mo.heat}%;background:${c};border-radius:99px"></div></div>
+    </div>`;
+  }).join('');
+}
+
+// ── CODE COPY ──
+function cpCode(btn){
+  const block=btn.closest('.code-block');
+  const text=Array.from(block.childNodes).filter(n=>n.nodeType===3).map(n=>n.textContent).join('').trim();
+  navigator.clipboard.writeText(text).then(()=>{btn.textContent='copied!';setTimeout(()=>btn.textContent='copy',2000);});
+}
+
+// ── SETTINGS ──
+function clearLocal(){if(!confirm('Clear session data?'))return;scanCount=0;lastConcept='—';activityLog=[];updateDash();}
+
+// ── HEALTH CHECK ──
+async function checkHealth(){
+  try{
+    const res=await fetch(`${API}/api/health`);
+    const data=await res.json();
+    document.getElementById('api-status').textContent=data.pytrends?'backend connected':'pytrends missing';
+    document.getElementById('api-status').style.color=data.pytrends?'#9fe1cb':'#f09595';
+  }catch(e){
+    document.getElementById('api-status').textContent='backend offline';
+    document.getElementById('api-status').style.color='#f09595';
+  }
+}
+
+// ── INIT ──
+checkHealth();
+renderSeasonal();
+</script>
+</body>
+</html>
