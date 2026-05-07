@@ -31,7 +31,7 @@ INSTALL (run once in VSCode terminal):
 import pandas as pd
 import numpy as np
 import matplotlib
-matplotlib.use("TkAgg")          # explicit backend — avoids blank window on some Windows setups
+matplotlib.use("Agg")   # headless — no display needed, saves to file only
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import os, time, re, sys, json, warnings
@@ -806,7 +806,6 @@ def render_chart(query, master_df, scores, mandate,
     ts=datetime.now().strftime("%Y%m%d_%H%M")
     path=os.path.join(OUTPUT_DIR,f"intel_{clean}_{ts}.png")
     plt.savefig(path, dpi=150, bbox_inches="tight", facecolor="#0d1117")
-    plt.show()
     print(f"\n  Chart saved: {path}")
     return path
 
@@ -1046,7 +1045,6 @@ def run_comparison():
     ts=datetime.now().strftime("%Y%m%d_%H%M")
     path=os.path.join(OUTPUT_DIR,f"compare_{ts}.png")
     plt.savefig(path,dpi=150,bbox_inches="tight",facecolor="#0d1117")
-    plt.show()
     print(f"\n  Comparison chart: {path}")
 
     print("\n  COMPARISON SUMMARY")
